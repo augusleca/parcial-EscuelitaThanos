@@ -1,10 +1,7 @@
 module Library where
 import PdePreludat
 
-
-
 -- PARTE 1
-
 
 --1)
 
@@ -21,9 +18,7 @@ data Personaje = UnPersonaje {
 ,   planeta :: String
 }deriving (Show,Eq)
 
-data Universo = UnUniverso {
-    personajes :: [Personaje]
-}deriving (Show,Eq)
+type Universo = [Personaje]
 
 guanteCompleto = UnGuantelete{
     material = "uru"
@@ -46,43 +41,35 @@ drStrange = UnPersonaje {
 ,   planeta = "Tierra"
 }
 
-universoEj = UnUniverso {
-    personajes = [ironMan,drStrange]
-}
+universoEj :: Universo
+universoEj = [ironMan,drStrange,ironMan]
 
-chasquidoUniverso :: Guantelete -> Universo -> [Personaje]
-chasquidoUniverso guante universo
-    | length (gemas guante) == 6 = reducirAMitadUniverso universo
-    | otherwise = (personajes universo)
+chasquidoUniverso :: Guantelete -> Universo -> Universo
+chasquidoUniverso guante
+    | length (gemas guante) == 6 = reducirAMitadUniverso
+    | otherwise = id
 
 reducirAMitadUniverso :: Universo -> [Personaje]
-reducirAMitadUniverso universo = take (cuantoTomarDeUniverso universo) (personajes universo)
+reducirAMitadUniverso universo = take (tomarMitadDeUniverso universo) universo
 
-cuantoTomarDeUniverso :: Universo -> Number
-cuantoTomarDeUniverso = floor.(/2).length.personajes
+tomarMitadDeUniverso :: Universo -> Number
+tomarMitadDeUniverso = floor.(/2).length
 
 -- 2)
 
 --a)
 aptoPendex :: Universo -> Bool
-aptoPendex universo = aplicarCondicionAUniverso edad (<45) universo
-
-aplicarCondicionAUniverso :: (Personaje -> a) -> (a -> Bool) -> Universo -> Bool
-aplicarCondicionAUniverso indice condicion universo = all (aplicarCondicionAPersonaje indice condicion) (personajes universo)
-
-aplicarCondicionAPersonaje :: (Personaje -> a) -> (a -> Bool) -> Personaje -> Bool
-aplicarCondicionAPersonaje indice condicion personaje = condicion (indice personaje)
+aptoPendex universo = any (<45) (map edad universo)
 
 --b)
 energiaTotalUniverso :: Universo -> Number
 energiaTotalUniverso = sum.(map energia).cualesTienenMasDe1Habilidad
 
 cualesTienenMasDe1Habilidad :: Universo -> [Personaje]
-cualesTienenMasDe1Habilidad universo = filter (tieneMasDeNHabilidades 1) (personajes universo)
+cualesTienenMasDe1Habilidad universo = filter (tieneMasDeNHabilidades 1) universo
 
 tieneMasDeNHabilidades :: Number -> Personaje -> Bool
 tieneMasDeNHabilidades n = (>n).length.habilidades
-
 
 -- PARTE 2
 
@@ -94,16 +81,14 @@ type Planeta = String
 
 --a)
 laMente :: Energia -> Gema
-laMente valorDebilitar = debilitarEnergia valorDebilitar
+laMente = debilitarEnergia 
 
 debilitarEnergia :: Energia -> Personaje -> Personaje
 debilitarEnergia cantidadEnergia usuario = usuario {energia = (energia usuario) - cantidadEnergia}
 
 --b)
-elAlma :: String -> Gema
-elAlma habilidadABorrar usuario
-    | existeHabilidad habilidadABorrar usuario = debilitarEnergia 10 (eliminarHabilidad habilidadABorrar usuario)
-    | otherwise = debilitarEnergia 10 usuario
+elAlma :: String -> Gema --probar con filter (/=habilidad) listaHabilidades :D
+elAlma habilidadABorrar = debilitarEnergia 10 . eliminarHabilidad habilidadABorrar
 
 eliminarHabilidad :: String -> Personaje -> Personaje
 eliminarHabilidad habilidadABorrar usuario = usuario {habilidades = (take (posicionDeHabilidad habilidadABorrar usuario) (habilidades usuario)) ++ (drop (1 + (posicionDeHabilidad habilidadABorrar usuario)) (habilidades usuario))}
