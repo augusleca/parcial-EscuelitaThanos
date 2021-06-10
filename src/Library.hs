@@ -169,6 +169,24 @@ cualGemaEsMasPoderosa victima gema1 gema2
     | energia (gema1 victima) < energia (gema2 victima) = True
     | otherwise = False    
 
+{- RESOLUCION DE PIPE USANDO MENOR SEGUN DE MINIGOLFITO:
+
+minimoSegun :: Ord b => (a->b)->[a]->a
+minimoSegun f = foldl1 (menorSegun f) 
+
+menorSegun :: Ord x => (t->x)->(t->t->t)
+menorSegun f a b
+  | f a < f b = a
+  | otherwise = b
+
+gemaMasPoderosa :: Guantelete -> Personaje -> Gema
+gemaMasPoderosa unGuantelete unPersonaje = minimoSegun (nivelEnergiaPostGema unPersonaje) (gemasEnGuantelete unGuantelete)
+
+nivelEnergiaPostGema :: Personaje -> Gema -> Number
+nivelEnergiaPostGema unPersonaje = energiaPersonaje . (implementarGema unPersonaje)
+
+-}
+
 -- 7) 
 
 --a)
